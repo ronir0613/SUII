@@ -1,7 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const FONT_FAMILIES = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy'];
+const FONT_FAMILIES = [
+  'serif', 'sans-serif', 'monospace', 'cursive', 'fantasy',
+  '"Comic Sans MS", "Comic Sans", cursive',
+  '"Impact", fantasy',
+  '"Courier New", Courier, monospace',
+  '"Trebuchet MS", sans-serif',
+  '"Arial Black", sans-serif',
+  '"Georgia", serif',
+  '"Verdana", sans-serif',
+  'system-ui',
+  '"Times New Roman", Times, serif',
+  'Arial, Helvetica, sans-serif',
+  '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+  '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
+  'Tahoma, Geneva, sans-serif',
+  '"Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif',
+  'Papyrus, fantasy',
+  '"Brush Script MT", cursive',
+  'Copperplate, fantasy',
+  'Consolas, monospace',
+  '"Segoe UI", Roboto, Helvetica, sans-serif',
+  'Optima, Candara, Calibri, sans-serif',
+  'Didot, serif',
+  'Monaco, monospace'
+];
 const FONT_WEIGHTS = ['normal', 'bold', '100', '300', '900'];
 const TEXT_VARIATIONS = ['SIU', 'SIUU', 'SIUUU', 'SIUUUU', 'SIUUUUU'];
 
@@ -25,19 +49,13 @@ export default function SuiSpawner() {
   const isMutedRef = useRef(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('sui-muted');
-    if (saved !== null) {
-      const parsed = saved === 'true';
-      setIsMuted(parsed);
-      isMutedRef.current = parsed;
-    }
+    // Intentionally empty or remove entirely to enforce muted by default
   }, []);
 
   const toggleMute = () => {
     const newVal = !isMuted;
     setIsMuted(newVal);
     isMutedRef.current = newVal;
-    localStorage.setItem('sui-muted', String(newVal));
   };
 
   useEffect(() => {
