@@ -1,11 +1,52 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "../layouts/Layout.astro";
+import SuiSpawner from "../components/SuiSpawner";
 ---
 
 <Layout>
-	<Welcome />
+  <SuiSpawner client:load />
+  <div id="color-container"></div>
 </Layout>
+
+<style>
+  #color-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 1s ease-in-out;
+    background-color: #ffbe91;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const colors = [
+    "#FFBE91",
+    "#FFDDB0",
+    "#FFFCE1",
+    "#CFEBFF",
+    "#FCF8F8",
+    "#FBEFEF",
+    "#F9DFDF",
+  ];
+
+  let currentIndex = 0;
+  const container = document.getElementById("color-container");
+
+  function changeColor() {
+    currentIndex = (currentIndex + 1) % colors.length;
+    if (container) {
+      container.style.backgroundColor = colors[currentIndex];
+    }
+  }
+
+  if (container) {
+    container.addEventListener("click", () => {
+      changeColor();
+    });
+  }
+</script>
