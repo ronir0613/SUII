@@ -2,8 +2,11 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📣</text></svg>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="description" content="Click anywhere to trigger SIU! A playful, dynamic interactive experience." />
+		<meta name="theme-color" content="#FFBE91" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="preload" href="/sui.mp3" as="audio" />
 		<meta name="generator" content={Astro.generator} />
 		<title>SIUUU!</title>
 	</head>
@@ -17,6 +20,11 @@
 	body {
 		margin: 0;
 		width: 100%;
-		height: 100%;
+		height: 100dvh;
+		overflow: hidden;
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 </style>

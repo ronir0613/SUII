@@ -108,7 +108,7 @@ export default function SuiSpawner() {
         rotation: Math.random() * 60 - 30, // initial rotation -30 to 30 degrees
         fontFamily: FONT_FAMILIES[Math.floor(Math.random() * FONT_FAMILIES.length)],
         fontWeight: FONT_WEIGHTS[Math.floor(Math.random() * FONT_WEIGHTS.length)],
-        fontSize: Math.floor(Math.random() * 60 + 36) + 'px', // 36px to 96px
+        fontSize: `clamp(${Math.floor(Math.random() * 20 + 24)}px, ${Math.floor(Math.random() * 10 + 6)}vw, ${Math.floor(Math.random() * 60 + 48)}px)`,
         letterSpacing: Math.random() * 0.5 + 'em', // 0em to 0.5em
         text: TEXT_VARIATIONS[Math.floor(Math.random() * TEXT_VARIATIONS.length)],
         tossHeight,
