@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://subsequent-ring.ronirapaka13.workers.dev/sitemap-index.xml

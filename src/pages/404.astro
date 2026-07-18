@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <div id="error-container">
+    <h1>404</h1>
+    <h2>Page Not Found</h2>
+    <p>Even Cristiano couldn't find this page.</p>
+    <a href="/">Go Back to SIUUU!</a>
+  </div>
+</Layout>
+
+<style>
+  #error-container {
+    width: 100vw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFBE91;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #333;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 6rem;
+    margin: 0;
+    font-weight: 900;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+  }
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  a {
+    padding: 1rem 2rem;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 9999px;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s;
+  }
+  
+  a:hover {
+    transform: scale(1.05);
+    background-color: #000;
+  }
+</style>

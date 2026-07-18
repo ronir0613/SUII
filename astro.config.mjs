@@ -4,9 +4,11 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 
 import cloudflare from '@astrojs/cloudflare';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
+  site: 'https://subsequent-ring.ronirapaka13.workers.dev',
+  integrations: [react(), sitemap()],
   adapter: cloudflare()
 });
