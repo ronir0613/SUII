@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://subsequent-ring.ronirapaka13.workers.dev',
+  site: 'https://clicksiu.buzz',
   integrations: [react(), sitemap()],
   adapter: cloudflare()
 });
