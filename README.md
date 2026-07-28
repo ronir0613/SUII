@@ -1,46 +1,56 @@
-# Astro Starter Kit: Basics
+# 🐐 SIUUU! - Interactive Web Experience
 
-```sh
-npm create astro@latest -- --template basics
-```
+An interactive soundboard experience where every click spawns dynamic, styled "SIU!" text animations paired with Cristiano Ronaldo's iconic celebration sound.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Live Site: **[clicksiu.buzz](https://clicksiu.buzz)**
 
-## 🚀 Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+## ✨ Features
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+- **Interactive Canvas**: Click anywhere on the screen to spawn a vibrant, randomized "SIU!" text animation.
+- **Dynamic Typography**: Every spawned word randomizes its font family (from 27 classic and modern typefaces), font weight, size, letter spacing, and rotation.
+- **Organic Audio Effects**: Each click plays the legendary "SIU" sound with subtle variations in playback rate (pitch), volume, and micro-delays to make it feel natural and responsive.
+- **Fluid Animations**: Smooth CSS/Framer Motion physics that toss the words into the air before they fade and fall.
+- **User Controls**: Includes a sleek, persistent mute/unmute button.
+- **SEO & Performance**: Optimized meta tags, custom OpenGraph visuals, Google Analytics integration, and lightning-fast loading times.
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+---
 
-## 🧞 Commands
+## 🛠️ Tech Stack
 
-All commands are run from the root of the project, from a terminal:
+- **Framework**: [Astro](https://astro.build/) (Static Site Generation)
+- **Frontend Logic**: [React](https://react.dev/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Deployment & Hosting**: [Cloudflare Pages](https://pages.cloudflare.com/) / [Wrangler](https://developers.cloudflare.com/workers/wrangler/)
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+---
 
-## 👀 Want to learn more?
+## 🚀 Getting Started
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Prerequisites
+
+Make sure you have Node.js installed (version `>= 22.12.0` recommended).
+
+### Installation
+
+1. Install the dependencies:
+   ```sh
+   npm install
+   ```
+
+2. Run the development server:
+   ```sh
+   npm run dev
+   ```
+
+3. Open your browser and navigate to `http://localhost:4321`.
+
+### Commands
+
+| Command | Action |
+| :--- | :--- |
+| `npm run dev` | Starts the Astro local dev server |
+| `npm run build` | Builds the production site to `./dist/` |
+| `npm run preview` | Previews your production build locally |
+| `npm run deploy` | Builds the site and deploys it to Cloudflare Pages via Wrangler |
