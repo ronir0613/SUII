@@ -9,6 +9,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://clicksiu.buzz',
+  output: 'server',
   integrations: [react(), sitemap()],
-  adapter: cloudflare()
+  adapter: cloudflare(),
 });
