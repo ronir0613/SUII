@@ -24,10 +24,11 @@ const BASE_HEADERS = {
 };
 
 // ─── helper: resolve KV binding ───────────────────────────────────────────────
+import { env } from 'cloudflare:workers';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getKV(locals: any): any | null {
-  return locals?.runtime?.env?.LEADERBOARD ?? null;
+  return (env as any).LEADERBOARD ?? null;
 }
 
 // ─── GET /api/leaderboard ─────────────────────────────────────────────────────
