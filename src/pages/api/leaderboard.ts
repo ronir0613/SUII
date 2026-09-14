@@ -24,11 +24,10 @@ const BASE_HEADERS = {
 };
 
 // ─── helper: resolve KV binding ───────────────────────────────────────────────
-// Uses a runtime cast so this works whether env.d.ts is fully wired or not.
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getKV(locals: App.Locals): KVNamespace | null {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (locals as any).runtime?.env?.LEADERBOARD ?? null;
+function getKV(locals: any): any | null {
+  return locals?.runtime?.env?.LEADERBOARD ?? null;
 }
 
 // ─── GET /api/leaderboard ─────────────────────────────────────────────────────
