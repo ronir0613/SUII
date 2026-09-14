@@ -44,13 +44,15 @@ export const GET: APIRoute = async ({ locals }) => {
     }
 
     const raw = await kv.get(KV_KEY, 'text');
-    const entries: LeaderboardEntry[] = raw ? JSON.parse(raw) : [];
+    let entries: LeaderboardEntry[] = [];
+    try { entries = raw ? JSON.parse(raw) : []; } catch { /* corrupted KV – start fresh */ }
 
     return new Response(JSON.stringify(entries.slice(0, TOP_N_RETURN)), {
       headers: BASE_HEADERS,
     });
-  } catch {
-    return new Response(JSON.stringify({ error: 'Server error' }), {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return new Response(JSON.stringify({ error: 'Server error', detail: msg }), {
       status: 500,
       headers: BASE_HEADERS,
     });
@@ -124,7 +126,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // ── Read → append → sort → trim → write ───────────────────────────────
     const ts  = Date.now();
     const raw = await kv.get(KV_KEY, 'text');
-    const entries: LeaderboardEntry[] = raw ? JSON.parse(raw) : [];
+    let entries: LeaderboardEntry[] = [];
+    try { entries = raw ? JSON.parse(raw) : []; } catch { /* corrupted KV – start fresh */ }
 
     entries.push({ name: cleanName, score, ts });
 
@@ -142,8 +145,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       JSON.stringify({ leaderboard: top10, rank, inTop10: rank > 0 && rank <= TOP_N_RETURN }),
       { headers: BASE_HEADERS }
     );
-  } catch {
-    return new Response(JSON.stringify({ error: 'Server error' }), {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return new Response(JSON.stringify({ error: 'Server error', detail: msg }), {
       status: 500,
       headers: BASE_HEADERS,
     });

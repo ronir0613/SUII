@@ -18,8 +18,12 @@
 			//   npx wrangler kv namespace create LEADERBOARD --preview
 			// Step 3 — paste the IDs returned by those commands below.
 			"binding": "LEADERBOARD",
-			"id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID",
-			"preview_id": "REPLACE_WITH_YOUR_PREVIEW_KV_NAMESPACE_ID"
+			"id": "09e962f256dc44898149aedeffd94488",
+			"preview_id": "8a5f01afba324aba8711c3aec532d0f4"
+		},
+		{
+			"binding": "SESSION",
+			"id": "bde8aa0701d6463d97b861c8f33f3c74"
 		}
 	],
 	"observability": {
