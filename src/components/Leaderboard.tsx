@@ -64,23 +64,23 @@ export default function Leaderboard({
   return (
     <div
       id="leaderboard-root"
-      style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9994 }}
+      style={{ position: 'fixed', top: 80, right: 20, zIndex: 9994, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
     >
       {/* ── Tab ─────────────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ marginBottom: 12 }}>
         <button
           onClick={() => setIsOpen(o => !o)}
           style={{
             background: 'rgba(255,255,255,0.92)',
             border: 'none',
-            borderRadius: '14px 14px 0 0',
-            padding: '8px 28px',
+            borderRadius: '14px',
+            padding: '10px 24px',
             fontSize: 13,
             fontFamily: '"Segoe UI", Roboto, sans-serif',
             fontWeight: 700,
             color: '#333',
             cursor: 'pointer',
-            boxShadow: '0 -3px 16px rgba(0,0,0,0.09)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.09)',
             letterSpacing: '0.08em',
             userSelect: 'none',
             WebkitUserSelect: 'none',
@@ -88,7 +88,7 @@ export default function Leaderboard({
             WebkitBackdropFilter: 'blur(6px)',
           }}
         >
-          🏆 TOP 10 {isOpen ? '▼' : '▲'}
+          🏆 TOP 10 {isOpen ? '▲' : '▼'}
         </button>
       </div>
 
@@ -97,19 +97,22 @@ export default function Leaderboard({
         {isOpen && (
           <motion.div
             key="drawer"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            transition={{ duration: 0.2 }}
             style={{
               background: 'rgba(255,255,255,0.97)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
-              overflow: 'hidden',
-              boxShadow: '0 -6px 28px rgba(0,0,0,0.1)',
+              overflowY: 'auto',
+              maxHeight: 'calc(100vh - 160px)',
+              width: '340px',
+              borderRadius: '16px',
+              boxShadow: '0 6px 28px rgba(0,0,0,0.1)',
             }}
           >
-            <div style={{ padding: '14px 16px 20px', maxWidth: 440, margin: '0 auto' }}>
+            <div style={{ padding: '14px 16px 20px', width: '100%', boxSizing: 'border-box' }}>
 
               {/* Loading */}
               {loading && (
