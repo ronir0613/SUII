@@ -203,11 +203,12 @@ function ClickCounterDisplay({
 
 interface ScoreRevealProps {
   score: number;
+  token: string | null;
   onPlayAgain: () => void;
   onSubmitted: (name: string) => void;
 }
 
-function ScoreReveal({ score, onPlayAgain, onSubmitted }: ScoreRevealProps) {
+function ScoreReveal({ score, token, onPlayAgain, onSubmitted }: ScoreRevealProps) {
   const [name,       setName]       = useState('');
   const [submitted,  setSubmitted]  = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -238,7 +239,7 @@ function ScoreReveal({ score, onPlayAgain, onSubmitted }: ScoreRevealProps) {
       const res = await fetch('/api/leaderboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), score }),
+        body: JSON.stringify({ name: name.trim(), score, token }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({})) as { error?: string };
@@ -521,6 +522,7 @@ export default function SuiSpawner() {
   const [bestScore,  setBestScore]  = useState(0);
   const [lbRefreshKey,  setLbRefreshKey]  = useState(0);
   const [submittedName, setSubmittedName] = useState<string | null>(null);
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
 
   // Stable refs — shared with the click handler to avoid stale closures
   const phaseRef      = useRef<Phase>('idle');
@@ -544,39 +546,56 @@ export default function SuiSpawner() {
     isMutedRef.current = next;
   };
 
-  const startChallenge = useCallback(() => {
+  const startChallenge = useCallback(async () => {
+    // Let user know it's starting
+    setPhase('countdown');
+    
+    let token = null;
+    try {
+      const res = await fetch('/api/start', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        token = data.token;
+      }
+    } catch (e) {
+      console.warn('Could not fetch token', e);
+    }
+    setChallengeToken(token);
+
     clickCountRef.current = 0;
     setClickCount(0);
     setFinalScore(0);
     setTimeLeft(CHALLENGE_DURATION);
     setSubmittedName(null);
     phaseRef.current = 'countdown';
-    setPhase('countdown');
+
+    const startTs = performance.now();
+    const durationMs = CHALLENGE_DURATION * 1000;
 
     timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        const next = prev - 1;
-        if (next <= 0) {
-          clearInterval(timerRef.current!);
-          timerRef.current  = null;
-          phaseRef.current  = 'done';   // freeze counting immediately (sync)
+      const elapsed = performance.now() - startTs;
+      const remainingMs = Math.max(0, durationMs - elapsed);
+      const remainingSec = Math.ceil(remainingMs / 1000);
+      
+      setTimeLeft(remainingSec);
+      
+      if (elapsed >= durationMs) {
+        clearInterval(timerRef.current!);
+        timerRef.current  = null;
+        phaseRef.current  = 'done';   // freeze counting immediately (sync)
 
-          const fs = clickCountRef.current;
-          setTimeout(() => {
-            setFinalScore(fs);
-            setPhase('done');
-            setBestScore(best => {
-              const newBest = Math.max(best, fs);
-              localStorage.setItem(LS_BEST_KEY, String(newBest));
-              return newBest;
-            });
-          }, 0);
-
-          return 0;
-        }
-        return next;
-      });
-    }, 1000);
+        const fs = clickCountRef.current;
+        setTimeout(() => {
+          setFinalScore(fs);
+          setPhase('done');
+          setBestScore(best => {
+            const newBest = Math.max(best, fs);
+            localStorage.setItem(LS_BEST_KEY, String(newBest));
+            return newBest;
+          });
+        }, 0);
+      }
+    }, 50); // Frequent tick for accurate timer representation
   }, []);
 
   const resetToIdle = useCallback(() => {
@@ -755,6 +774,7 @@ export default function SuiSpawner() {
           <ScoreReveal
             key="score-reveal"
             score={finalScore}
+            token={challengeToken}
             onPlayAgain={resetToIdle}
             onSubmitted={handleSubmitted}
           />

@@ -24,5 +24,8 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "wrangler": "^4.112.0"
+  },
+  "allowScripts": {
+    "workerd@1.20260925.1": true
   }
 }

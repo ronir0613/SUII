@@ -23,7 +23,8 @@
 		},
 		{
 			"binding": "SESSION",
-			"id": "bde8aa0701d6463d97b861c8f33f3c74"
+			"id": "bde8aa0701d6463d97b861c8f33f3c74",
+			"preview_id": "79eebfc046124a2181915445cb65f098"
 		}
 	],
 	"observability": {

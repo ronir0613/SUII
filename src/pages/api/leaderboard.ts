@@ -20,16 +20,23 @@ const KV_KEY       = 'top100';
 const BASE_HEADERS = {
   'Content-Type': 'application/json',
   'Cache-Control': 'no-store',
-  'Access-Control-Allow-Origin': '*',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
 };
 
-// ─── helper: resolve KV binding ───────────────────────────────────────────────
+// ─── helper: resolve KV bindings ──────────────────────────────────────────────
 import { env } from 'cloudflare:workers';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getKV(locals: any): any | null {
   return (env as any).LEADERBOARD ?? null;
 }
+function getSessionKV(locals: any): any | null {
+  return (env as any).SESSION ?? null;
+}
+
 
 // ─── GET /api/leaderboard ─────────────────────────────────────────────────────
 // Returns the top 10 entries as JSON, sorted descending by score.
@@ -60,14 +67,29 @@ export const GET: APIRoute = async ({ locals }) => {
 };
 
 // ─── POST /api/leaderboard ────────────────────────────────────────────────────
-// Body: { name: string, score: number }
+// Body: { name: string, score: number, token: string }
 // Validates, appends to KV list, keeps only top 100 by score.
 // Returns: { leaderboard: top10, rank: number, inTop10: boolean }
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // ── Simple IP-based Rate Limiting (using LEADERBOARD KV for simplicity, though natively CF rules are better)
+    const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+    const kv = getKV(locals);
+    if (kv && ip !== 'unknown') {
+      const rlKey = `rl:${ip}`;
+      const requests = await kv.get(rlKey);
+      if (requests && parseInt(requests) > 5) {
+        return new Response(JSON.stringify({ error: 'Too many requests' }), {
+          status: 429,
+          headers: BASE_HEADERS,
+        });
+      }
+      await kv.put(rlKey, String((parseInt(requests || '0')) + 1), { expirationTtl: 60 });
+    }
+
     // Parse body
-    let body: { name?: unknown; score?: unknown };
+    let body: { name?: unknown; score?: unknown; token?: unknown };
     try {
       body = await request.json();
     } catch {
@@ -77,7 +99,50 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    const { name, score } = body;
+    const { name, score, token } = body;
+
+    // ── Validate token and server-side timer ───────────────────────────────
+    if (!token || typeof token !== 'string') {
+      return new Response(JSON.stringify({ error: 'Missing challenge token' }), {
+        status: 400,
+        headers: BASE_HEADERS,
+      });
+    }
+
+    const sessionKv = getSessionKV(locals);
+    if (sessionKv) {
+      const sessionStr = await sessionKv.get(token);
+      if (!sessionStr) {
+        return new Response(JSON.stringify({ error: 'Invalid or expired challenge token' }), {
+          status: 400,
+          headers: BASE_HEADERS,
+        });
+      }
+      
+      const session = JSON.parse(sessionStr);
+      const elapsedMs = Date.now() - session.ts;
+      
+      // Allow between 9 seconds (clock skew) and 120 seconds (typing + network delay)
+      if (elapsedMs < 9000 || elapsedMs > 120000) {
+        await sessionKv.delete(token);
+        return new Response(JSON.stringify({ error: 'Challenge completed impossibly fast or expired' }), {
+          status: 400,
+          headers: BASE_HEADERS,
+        });
+      }
+
+      const cps = (score as number) / (elapsedMs / 1000);
+      if (cps > 15) {
+        await sessionKv.delete(token);
+        return new Response(JSON.stringify({ error: 'Clicks per second rate is physically impossible' }), {
+          status: 400,
+          headers: BASE_HEADERS,
+        });
+      }
+
+      // Token is single-use
+      await sessionKv.delete(token);
+    }
 
     // ── Validate name ──────────────────────────────────────────────────────
     if (!name || typeof name !== 'string' || !name.trim()) {
@@ -113,8 +178,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const kv = getKV(locals);
-
     // ── KV not configured — graceful degradation for local dev ─────────────
     if (!kv) {
       return new Response(
@@ -128,6 +191,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const raw = await kv.get(KV_KEY, 'text');
     let entries: LeaderboardEntry[] = [];
     try { entries = raw ? JSON.parse(raw) : []; } catch { /* corrupted KV – start fresh */ }
+
+    // Validate KV JSON shape
+    if (!Array.isArray(entries)) { entries = []; }
+    entries = entries.filter(e => typeof e.name === 'string' && typeof e.score === 'number');
 
     entries.push({ name: cleanName, score, ts });
 
@@ -160,7 +227,6 @@ export const OPTIONS: APIRoute = async () => {
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },

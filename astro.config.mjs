@@ -12,4 +12,9 @@ export default defineConfig({
   output: 'server',
   integrations: [react(), sitemap()],
   adapter: cloudflare(),
+  vite: {
+    optimizeDeps: {
+      exclude: ['framer-motion']
+    }
+  }
 });
