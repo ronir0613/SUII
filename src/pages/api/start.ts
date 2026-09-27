@@ -7,7 +7,7 @@ const BASE_HEADERS = {
   'Access-Control-Allow-Origin': '*',
 };
 
-export const POST: APIRoute = async ({ locals }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const sessionKv = (env as any).SESSION ?? null;
     const token = crypto.randomUUID();

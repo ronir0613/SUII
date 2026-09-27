@@ -15,6 +15,9 @@ export default defineConfig({
   vite: {
     optimizeDeps: {
       exclude: ['framer-motion']
+    },
+    ssr: {
+      noExternal: ['framer-motion']
     }
   }
 });

@@ -548,6 +548,13 @@ export default function SuiSpawner() {
   };
 
   const startChallenge = useCallback(async () => {
+    if (phaseRef.current !== 'idle') return;
+    
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     // Let user know it's starting and sync ref immediately so clicks count
     setPhase('countdown');
     phaseRef.current = 'countdown';
@@ -605,7 +612,12 @@ export default function SuiSpawner() {
   }, []);
 
   const resetToIdle = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    if (phaseRef.current !== 'done') return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     phaseRef.current = 'idle';
     setPhase('idle');
     setTimeLeft(CHALLENGE_DURATION);

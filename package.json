@@ -27,5 +27,8 @@
   },
   "allowScripts": {
     "workerd@1.20260925.1": true
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
   }
 }
