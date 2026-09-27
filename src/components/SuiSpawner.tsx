@@ -275,6 +275,7 @@ function ScoreReveal({ score, token, onPlayAgain, onSubmitted }: ScoreRevealProp
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
+      onClick={(e) => e.stopPropagation()}
       style={{
         position: 'fixed',
         inset: 0,
@@ -547,27 +548,32 @@ export default function SuiSpawner() {
   };
 
   const startChallenge = useCallback(async () => {
-    // Let user know it's starting
+    // Let user know it's starting and sync ref immediately so clicks count
     setPhase('countdown');
-    
-    let token = null;
-    try {
-      const res = await fetch('/api/start', { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        token = data.token;
-      }
-    } catch (e) {
-      console.warn('Could not fetch token', e);
-    }
-    setChallengeToken(token);
-
+    phaseRef.current = 'countdown';
     clickCountRef.current = 0;
     setClickCount(0);
     setFinalScore(0);
     setTimeLeft(CHALLENGE_DURATION);
     setSubmittedName(null);
-    phaseRef.current = 'countdown';
+    
+    let token = null;
+    try {
+      const res = await fetch('/api/start', { method: 'POST' });
+      if (!res.ok) {
+        throw new Error(`Failed with status ${res.status}`);
+      }
+      const data = await res.json();
+      token = data.token;
+    } catch (e) {
+      console.warn('Could not fetch token', e);
+      // Fallback gracefully on network error or rate limit
+      alert('Failed to start challenge (network error or too many requests). Please wait a moment and try again.');
+      setPhase('idle');
+      phaseRef.current = 'idle';
+      return; // Abort starting the challenge
+    }
+    setChallengeToken(token);
 
     const startTs = performance.now();
     const durationMs = CHALLENGE_DURATION * 1000;
