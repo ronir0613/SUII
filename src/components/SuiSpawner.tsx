@@ -563,7 +563,7 @@ export default function SuiSpawner() {
       if (!res.ok) {
         throw new Error(`Failed with status ${res.status}`);
       }
-      const data = await res.json();
+      const data = (await res.json()) as { token: string };
       token = data.token;
     } catch (e) {
       console.warn('Could not fetch token', e);
