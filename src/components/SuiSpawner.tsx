@@ -30,7 +30,15 @@ const FONT_FAMILIES = [
   'Monaco, monospace',
 ];
 const FONT_WEIGHTS = ['normal', 'bold', '100', '300', '900'];
-const TEXT_VARIATIONS = ['SIU', 'SIUU', 'SIUUU', 'SIUUUU', 'SIUUUUU'];
+const TEXT_VARIATIONS = [
+  'SIU!', 'SIU!', 'SIU!', 'SIU!',
+  'SIUUU!', 'SIUUU!', 'SIUUU!',
+  'SIUUUUU',
+  'CALMA',
+  'GOAT',
+  '🐐'
+];
+const TEXT_COLORS = ['#FAFAFA', '#FAFAFA', '#FFD700', '#FF6B35'];
 const CHALLENGE_DURATION = 10;
 const LS_BEST_KEY = 'sui_best_score';
 
@@ -47,6 +55,8 @@ interface SuiInstance {
   fontSize: string;
   letterSpacing: string;
   text: string;
+  color: string;
+  isGoat: boolean;
   tossHeight: string;
   duration: number;
   fadeStart: number;
@@ -674,9 +684,22 @@ export default function SuiSpawner() {
       }
 
       // ── SUI toss ───────────────────────────────────────────────────────────
+      const text = randomFrom(TEXT_VARIATIONS);
+      const isGoat = text === 'GOAT' || text === '🐐';
+
       const tossHeight = `${Math.floor(Math.random() * 60 + 10)}vh`;
       const duration   = Math.random() * 1.5 + 1.5;
       const fadeStart  = Math.random() * 0.4 + 0.3;
+
+      let baseFontSizePx = Math.floor(Math.random() * 20 + 24);
+      let vwFontSize = Math.floor(Math.random() * 10 + 6);
+      let maxFontSizePx = Math.floor(Math.random() * 60 + 48);
+
+      if (isGoat) {
+        baseFontSizePx += 16;
+        vwFontSize += 4;
+        maxFontSizePx += 32;
+      }
 
       setSuis(prev => [...prev, {
         id: idCounter++,
@@ -684,9 +707,11 @@ export default function SuiSpawner() {
         rotation:      Math.random() * 60 - 30,
         fontFamily:    randomFrom(FONT_FAMILIES),
         fontWeight:    randomFrom(FONT_WEIGHTS),
-        fontSize:      `clamp(${Math.floor(Math.random() * 20 + 24)}px, ${Math.floor(Math.random() * 10 + 6)}vw, ${Math.floor(Math.random() * 60 + 48)}px)`,
+        fontSize:      `clamp(${baseFontSizePx}px, ${vwFontSize}vw, ${maxFontSizePx}px)`,
         letterSpacing: `${Math.random() * 0.5}em`,
-        text:          randomFrom(TEXT_VARIATIONS),
+        text,
+        color:         randomFrom(TEXT_COLORS),
+        isGoat,
         tossHeight,
         duration,
         fadeStart,
@@ -810,10 +835,17 @@ export default function SuiSpawner() {
       {suis.map(sui => (
         <motion.div
           key={sui.id}
-          initial={{ y: '110vh', x: '-50%', rotate: sui.rotation, opacity: 1 }}
+          initial={{
+            y: '110vh',
+            x: '-50%',
+            rotate: sui.rotation,
+            opacity: 1,
+            scale: sui.isGoat ? 0.5 : 1
+          }}
           animate={{
             y:       ['110vh', sui.tossHeight, '120vh'],
             opacity: [1, 1, 0],
+            scale:   sui.isGoat ? [0.5, 1.4, 1] : 1,
           }}
           transition={{
             duration: sui.duration,
@@ -827,7 +859,7 @@ export default function SuiSpawner() {
             top: 0,
             pointerEvents: 'none',
             userSelect: 'none',
-            color: '#FAFAFA',
+            color: sui.color,
             WebkitTextStroke: '2px #222',
             textShadow: '2px 4px 6px rgba(0,0,0,0.2)',
             fontSize: sui.fontSize,
