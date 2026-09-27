@@ -35,8 +35,7 @@ const TEXT_VARIATIONS = [
   'SIUUU!', 'SIUUU!', 'SIUUU!',
   'SIUUUUU',
   'CALMA',
-  'GOAT',
-  '🐐'
+  'GOAT'
 ];
 const TEXT_COLORS = ['#FAFAFA', '#FAFAFA', '#FFD700', '#FF6B35'];
 const CHALLENGE_DURATION = 10;
@@ -685,7 +684,7 @@ export default function SuiSpawner() {
 
       // ── SUI toss ───────────────────────────────────────────────────────────
       const text = randomFrom(TEXT_VARIATIONS);
-      const isGoat = text === 'GOAT' || text === '🐐';
+      const isGoat = text === 'GOAT';
 
       const tossHeight = `${Math.floor(Math.random() * 60 + 10)}vh`;
       const duration   = Math.random() * 1.5 + 1.5;
@@ -701,21 +700,27 @@ export default function SuiSpawner() {
         maxFontSizePx += 32;
       }
 
-      setSuis(prev => [...prev, {
-        id: idCounter++,
-        x:             Math.random() * 90 + 5,
-        rotation:      Math.random() * 60 - 30,
-        fontFamily:    randomFrom(FONT_FAMILIES),
-        fontWeight:    randomFrom(FONT_WEIGHTS),
-        fontSize:      `clamp(${baseFontSizePx}px, ${vwFontSize}vw, ${maxFontSizePx}px)`,
-        letterSpacing: `${Math.random() * 0.5}em`,
-        text,
-        color:         randomFrom(TEXT_COLORS),
-        isGoat,
-        tossHeight,
-        duration,
-        fadeStart,
-      }]);
+      setSuis(prev => {
+        const next = [...prev, {
+          id: idCounter++,
+          x:             Math.random() * 90 + 5,
+          rotation:      Math.random() * 60 - 30,
+          fontFamily:    randomFrom(FONT_FAMILIES),
+          fontWeight:    randomFrom(FONT_WEIGHTS),
+          fontSize:      `clamp(${baseFontSizePx}px, ${vwFontSize}vw, ${maxFontSizePx}px)`,
+          letterSpacing: `${Math.random() * 0.5}em`,
+          text,
+          color:         randomFrom(TEXT_COLORS),
+          isGoat,
+          tossHeight,
+          duration,
+          fadeStart,
+        }];
+        if (next.length > 25) {
+          return next.slice(next.length - 25);
+        }
+        return next;
+      });
     };
 
     window.addEventListener('click', handleClick);
@@ -837,7 +842,7 @@ export default function SuiSpawner() {
           key={sui.id}
           initial={{
             y: '110vh',
-            x: '-50%',
+            x: `calc(${sui.x}vw - 50%)`,
             rotate: sui.rotation,
             opacity: 1,
             scale: sui.isGoat ? 0.5 : 1
@@ -855,19 +860,20 @@ export default function SuiSpawner() {
           onAnimationComplete={() => handleAnimationComplete(sui.id)}
           style={{
             position: 'fixed',
-            left: `${sui.x}vw`,
+            left: 0,
             top: 0,
             pointerEvents: 'none',
             userSelect: 'none',
             color: sui.color,
             WebkitTextStroke: '2px #222',
-            textShadow: '2px 4px 6px rgba(0,0,0,0.2)',
+            textShadow: '2px 4px rgba(0,0,0,0.3)',
             fontSize: sui.fontSize,
             fontWeight: sui.fontWeight,
             fontFamily: sui.fontFamily,
             letterSpacing: sui.letterSpacing,
             textTransform: 'uppercase',
             zIndex: 9999,
+            willChange: 'transform, opacity',
           }}
         >
           {sui.text}
